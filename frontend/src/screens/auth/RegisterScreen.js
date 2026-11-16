@@ -9,6 +9,7 @@ import {
   Platform,
   TouchableOpacity,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { COLORS, SIZES } from '../../constants/theme';
 import { useAuth } from '../../context/AuthContext';
 import Input from '../../components/common/Input';
@@ -18,7 +19,7 @@ import Badge from '../../components/common/Badge';
 
 const CURRENCIES = ['₹', '$', '€', '£'];
 
-export default function RegisterScreen({ onNavigateLogin }) {
+export default function RegisterScreen({ navigation, onNavigateLogin }) {
   const { register, isLoading, authError, clearError } = useAuth();
 
   const [name, setName] = useState('');
@@ -71,6 +72,14 @@ export default function RegisterScreen({ onNavigateLogin }) {
     });
   };
 
+  const goToLogin = () => {
+    if (navigation?.navigate) {
+      navigation.navigate('Login');
+    } else if (onNavigateLogin) {
+      onNavigateLogin();
+    }
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <KeyboardAvoidingView
@@ -96,7 +105,8 @@ export default function RegisterScreen({ onNavigateLogin }) {
           <Card style={styles.formCard} variant="elevated">
             {authError && (
               <View style={styles.errorBanner}>
-                <Text style={styles.errorBannerText}>❌ {authError}</Text>
+                <Ionicons name="alert-circle" size={18} color={COLORS.danger} style={{ marginRight: 6 }} />
+                <Text style={styles.errorBannerText}>{authError}</Text>
               </View>
             )}
 
@@ -104,6 +114,7 @@ export default function RegisterScreen({ onNavigateLogin }) {
               label="Full Name"
               placeholder="e.g. Sarthak Khalasi"
               value={name}
+              leftIcon={<Ionicons name="person-outline" size={18} color={COLORS.textMuted} />}
               onChangeText={(text) => {
                 setName(text);
                 if (errors.name) setErrors((prev) => ({ ...prev, name: null }));
@@ -116,6 +127,7 @@ export default function RegisterScreen({ onNavigateLogin }) {
               label="Email Address"
               placeholder="e.g. sarthak@splitflow.com"
               value={email}
+              leftIcon={<Ionicons name="mail-outline" size={18} color={COLORS.textMuted} />}
               onChangeText={(text) => {
                 setEmail(text);
                 if (errors.email) setErrors((prev) => ({ ...prev, email: null }));
@@ -129,6 +141,7 @@ export default function RegisterScreen({ onNavigateLogin }) {
               label="Password"
               placeholder="Minimum 6 characters"
               value={password}
+              leftIcon={<Ionicons name="lock-closed-outline" size={18} color={COLORS.textMuted} />}
               onChangeText={(text) => {
                 setPassword(text);
                 if (errors.password) setErrors((prev) => ({ ...prev, password: null }));
@@ -141,6 +154,7 @@ export default function RegisterScreen({ onNavigateLogin }) {
               label="Confirm Password"
               placeholder="Re-enter your password"
               value={confirmPassword}
+              leftIcon={<Ionicons name="shield-checkmark-outline" size={18} color={COLORS.textMuted} />}
               onChangeText={(text) => {
                 setConfirmPassword(text);
                 if (errors.confirmPassword) setErrors((prev) => ({ ...prev, confirmPassword: null }));
@@ -179,6 +193,7 @@ export default function RegisterScreen({ onNavigateLogin }) {
               label="Target Monthly Budget"
               placeholder="e.g. 25000"
               value={monthlyBudget}
+              leftIcon={<Ionicons name="cash-outline" size={18} color={COLORS.textMuted} />}
               onChangeText={(text) => {
                 setMonthlyBudget(text);
                 if (errors.monthlyBudget) setErrors((prev) => ({ ...prev, monthlyBudget: null }));
@@ -192,13 +207,14 @@ export default function RegisterScreen({ onNavigateLogin }) {
               onPress={handleRegister}
               loading={isLoading}
               style={styles.submitBtn}
+              icon={<Ionicons name="person-add-outline" size={20} color={COLORS.white} />}
             />
           </Card>
 
           {/* Navigation to Login */}
           <View style={styles.footer}>
             <Text style={styles.footerText}>Already registered? </Text>
-            <TouchableOpacity onPress={onNavigateLogin}>
+            <TouchableOpacity onPress={goToLogin}>
               <Text style={styles.loginLink}>Sign In</Text>
             </TouchableOpacity>
           </View>
@@ -246,6 +262,8 @@ const styles = StyleSheet.create({
     padding: 22,
   },
   errorBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: 'rgba(239, 68, 68, 0.15)',
     borderLeftWidth: 4,
     borderLeftColor: COLORS.danger,
@@ -257,6 +275,7 @@ const styles = StyleSheet.create({
     color: COLORS.danger,
     fontSize: SIZES.sm,
     fontWeight: '600',
+    flex: 1,
   },
   currencySection: {
     marginBottom: 16,

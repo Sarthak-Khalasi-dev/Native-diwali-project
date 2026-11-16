@@ -9,13 +9,13 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { COLORS, SIZES } from '../../constants/theme';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../services/api';
 import Card from '../../components/common/Card';
 import Badge from '../../components/common/Badge';
 import StatCard from '../../components/common/StatCard';
-import Button from '../../components/common/Button';
 
 export default function DashboardScreen() {
   const { user, logout } = useAuth();
@@ -85,16 +85,17 @@ export default function DashboardScreen() {
           </View>
 
           <View style={styles.topRightActions}>
-            <TouchableOpacity onPress={logout} style={styles.logoutBtn}>
-              <Text style={styles.logoutText}>🚪 Logout</Text>
+            <TouchableOpacity onPress={logout} style={styles.logoutBtn} activeOpacity={0.8}>
+              <Ionicons name="log-out-outline" size={16} color={COLORS.danger} style={{ marginRight: 4 }} />
+              <Text style={styles.logoutText}>Logout</Text>
             </TouchableOpacity>
           </View>
         </View>
 
-        {/* Milestone Card */}
+        {/* Milestone Status Card */}
         <Card style={styles.milestoneCard} variant="flat">
           <View style={styles.milestoneHeader}>
-            <Badge text="Day 2 Completed" variant="success" />
+            <Badge text="Day 2 • React Native" variant="success" />
             <View style={styles.statusDotRow}>
               <View
                 style={[
@@ -103,13 +104,13 @@ export default function DashboardScreen() {
                 ]}
               />
               <Text style={styles.statusDotText}>
-                {backendOnline ? 'Backend Connected' : 'Offline / Mock'}
+                {backendOnline ? 'Backend Connected' : 'Offline Mode'}
               </Text>
             </View>
           </View>
-          <Text style={styles.milestoneTitle}>Authentication & UI System</Text>
+          <Text style={styles.milestoneTitle}>Expo Managed App Architecture</Text>
           <Text style={styles.milestoneDesc}>
-            User session verified with JWT token. Ready for Day 3 Navigation & Deep Route Integration!
+            React Navigation 7 Bottom Tabs active. React Native Vector Icons & persistent auth state verified.
           </Text>
         </Card>
 
@@ -169,14 +170,14 @@ export default function DashboardScreen() {
             amount={totalIncome}
             currency={currency}
             type="income"
-            icon={<Text style={styles.statEmoji}>📈</Text>}
+            icon={<Ionicons name="trending-up" size={20} color={COLORS.income} />}
           />
           <StatCard
             title="Expenses"
             amount={totalExpense}
             currency={currency}
             type="expense"
-            icon={<Text style={styles.statEmoji}>📉</Text>}
+            icon={<Ionicons name="trending-down" size={20} color={COLORS.expense} />}
           />
         </View>
 
@@ -186,14 +187,15 @@ export default function DashboardScreen() {
           currency={currency}
           type={netSavings >= 0 ? 'income' : 'expense'}
           subtitle={netSavings >= 0 ? 'Surplus this month' : 'Deficit this month'}
-          icon={<Text style={styles.statEmoji}>💰</Text>}
+          icon={<Ionicons name="wallet-outline" size={20} color={COLORS.secondary} />}
         />
 
         {/* Recent Activity Section */}
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Recent Transactions</Text>
-          <TouchableOpacity onPress={onRefresh}>
-            <Text style={styles.refreshLink}>Sync 🔄</Text>
+          <TouchableOpacity onPress={onRefresh} style={styles.refreshBtn}>
+            <Ionicons name="refresh" size={16} color={COLORS.primary} style={{ marginRight: 4 }} />
+            <Text style={styles.refreshLink}>Sync</Text>
           </TouchableOpacity>
         </View>
 
@@ -204,9 +206,11 @@ export default function DashboardScreen() {
             <Card key={tx._id} style={styles.txCard} variant="flat">
               <View style={styles.txRow}>
                 <View style={styles.txIconBox}>
-                  <Text style={styles.txCategoryIcon}>
-                    {tx.type === 'income' ? '💵' : '🏷️'}
-                  </Text>
+                  <Ionicons
+                    name={tx.type === 'income' ? 'arrow-down-circle' : 'receipt-outline'}
+                    size={20}
+                    color={tx.type === 'income' ? COLORS.income : COLORS.textMuted}
+                  />
                 </View>
                 <View style={styles.txInfo}>
                   <Text style={styles.txTitle}>{tx.title}</Text>
@@ -228,21 +232,13 @@ export default function DashboardScreen() {
           ))
         ) : (
           <Card style={styles.emptyCard} variant="flat">
-            <Text style={styles.emptyIcon}>📭</Text>
+            <Ionicons name="document-text-outline" size={40} color={COLORS.textMuted} />
             <Text style={styles.emptyTitle}>No Transactions Recorded Yet</Text>
             <Text style={styles.emptySubtitle}>
               Run the backend seed or tap the sync button to fetch live transactions.
             </Text>
           </Card>
         )}
-
-        {/* Quick Action Preview for Day 3 */}
-        <View style={styles.actionBanner}>
-          <Text style={styles.actionBannerTitle}>🚀 Next Up: Day 3</Text>
-          <Text style={styles.actionBannerText}>
-            React Navigation Bottom Tabs (Dashboard, Expenses, Groups, Analytics, Profile) & Full CRUD forms.
-          </Text>
-        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -299,6 +295,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   logoutBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: 'rgba(239, 68, 68, 0.15)',
     paddingVertical: 6,
     paddingHorizontal: 12,
@@ -393,9 +391,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 12,
   },
-  statEmoji: {
-    fontSize: 18,
-  },
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -407,6 +402,10 @@ const styles = StyleSheet.create({
     fontSize: SIZES.lg,
     fontWeight: '700',
     color: COLORS.text,
+  },
+  refreshBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   refreshLink: {
     fontSize: SIZES.sm,
@@ -430,9 +429,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginRight: 12,
   },
-  txCategoryIcon: {
-    fontSize: 18,
-  },
   txInfo: {
     flex: 1,
   },
@@ -455,39 +451,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  emptyIcon: {
-    fontSize: 36,
-    marginBottom: 8,
-  },
   emptyTitle: {
     fontSize: SIZES.base,
     fontWeight: '700',
     color: COLORS.text,
+    marginTop: 8,
     marginBottom: 4,
   },
   emptySubtitle: {
     fontSize: SIZES.xs,
     color: COLORS.textSecondary,
     textAlign: 'center',
-    lineHeight: 18,
-  },
-  actionBanner: {
-    marginTop: 20,
-    padding: 16,
-    borderRadius: SIZES.radius,
-    backgroundColor: 'rgba(56, 189, 248, 0.08)',
-    borderWidth: 1,
-    borderColor: 'rgba(56, 189, 248, 0.2)',
-  },
-  actionBannerTitle: {
-    fontSize: SIZES.sm,
-    fontWeight: '700',
-    color: COLORS.secondary,
-    marginBottom: 4,
-  },
-  actionBannerText: {
-    fontSize: SIZES.xs,
-    color: COLORS.textSecondary,
     lineHeight: 18,
   },
 });

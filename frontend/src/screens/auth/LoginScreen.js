@@ -9,6 +9,7 @@ import {
   Platform,
   TouchableOpacity,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { COLORS, SIZES } from '../../constants/theme';
 import { useAuth } from '../../context/AuthContext';
 import Input from '../../components/common/Input';
@@ -16,7 +17,7 @@ import Button from '../../components/common/Button';
 import Card from '../../components/common/Card';
 import Badge from '../../components/common/Badge';
 
-export default function LoginScreen({ onNavigateRegister }) {
+export default function LoginScreen({ navigation, onNavigateRegister }) {
   const { login, isLoading, authError, clearError } = useAuth();
 
   const [email, setEmail] = useState('');
@@ -54,6 +55,14 @@ export default function LoginScreen({ onNavigateRegister }) {
     clearError();
   };
 
+  const goToRegister = () => {
+    if (navigation?.navigate) {
+      navigation.navigate('Register');
+    } else if (onNavigateRegister) {
+      onNavigateRegister();
+    }
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <KeyboardAvoidingView
@@ -67,10 +76,10 @@ export default function LoginScreen({ onNavigateRegister }) {
           {/* Header Branding */}
           <View style={styles.header}>
             <View style={styles.logoCircle}>
-              <Text style={styles.logoIcon}>💸</Text>
+              <Ionicons name="wallet-outline" size={34} color={COLORS.primary} />
             </View>
             <View style={styles.badgeWrapper}>
-              <Badge text="Day 2 • Auth Milestone" variant="primary" />
+              <Badge text="Day 2 Milestone" variant="primary" />
             </View>
             <Text style={styles.title}>SplitFlow</Text>
             <Text style={styles.subtitle}>
@@ -85,7 +94,8 @@ export default function LoginScreen({ onNavigateRegister }) {
 
             {authError && (
               <View style={styles.errorBanner}>
-                <Text style={styles.errorBannerText}>❌ {authError}</Text>
+                <Ionicons name="alert-circle" size={18} color={COLORS.danger} style={{ marginRight: 6 }} />
+                <Text style={styles.errorBannerText}>{authError}</Text>
               </View>
             )}
 
@@ -93,6 +103,7 @@ export default function LoginScreen({ onNavigateRegister }) {
               label="Email Address"
               placeholder="e.g. sarthak@splitflow.com"
               value={email}
+              leftIcon={<Ionicons name="mail-outline" size={18} color={COLORS.textMuted} />}
               onChangeText={(text) => {
                 setEmail(text);
                 if (errors.email) setErrors((prev) => ({ ...prev, email: null }));
@@ -106,6 +117,7 @@ export default function LoginScreen({ onNavigateRegister }) {
               label="Password"
               placeholder="Enter your password"
               value={password}
+              leftIcon={<Ionicons name="lock-closed-outline" size={18} color={COLORS.textMuted} />}
               onChangeText={(text) => {
                 setPassword(text);
                 if (errors.password) setErrors((prev) => ({ ...prev, password: null }));
@@ -119,6 +131,7 @@ export default function LoginScreen({ onNavigateRegister }) {
               onPress={handleLogin}
               loading={isLoading}
               style={styles.loginBtn}
+              icon={<Ionicons name="log-in-outline" size={20} color={COLORS.white} />}
             />
 
             {/* Quick Demo Fill Shortcut */}
@@ -127,7 +140,10 @@ export default function LoginScreen({ onNavigateRegister }) {
               onPress={fillDemoAccount}
               activeOpacity={0.7}
             >
-              <Text style={styles.demoFillText}>✨ Quick Fill Demo Credentials</Text>
+              <View style={styles.demoRow}>
+                <Ionicons name="sparkles" size={16} color={COLORS.secondary} style={{ marginRight: 6 }} />
+                <Text style={styles.demoFillText}>Quick Fill Demo Credentials</Text>
+              </View>
               <Text style={styles.demoFillSubtext}>(sarthak@splitflow.com / password123)</Text>
             </TouchableOpacity>
           </Card>
@@ -135,7 +151,7 @@ export default function LoginScreen({ onNavigateRegister }) {
           {/* Navigation to Register */}
           <View style={styles.footer}>
             <Text style={styles.footerText}>Don't have an account yet? </Text>
-            <TouchableOpacity onPress={onNavigateRegister}>
+            <TouchableOpacity onPress={goToRegister}>
               <Text style={styles.signUpLink}>Create Account</Text>
             </TouchableOpacity>
           </View>
@@ -167,15 +183,12 @@ const styles = StyleSheet.create({
     width: 68,
     height: 68,
     borderRadius: 34,
-    backgroundColor: 'rgba(99, 102, 241, 0.2)',
+    backgroundColor: 'rgba(99, 102, 241, 0.15)',
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 12,
     borderWidth: 2,
     borderColor: COLORS.primary,
-  },
-  logoIcon: {
-    fontSize: 32,
   },
   badgeWrapper: {
     marginBottom: 10,
@@ -208,6 +221,8 @@ const styles = StyleSheet.create({
     marginBottom: 18,
   },
   errorBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: 'rgba(239, 68, 68, 0.15)',
     borderLeftWidth: 4,
     borderLeftColor: COLORS.danger,
@@ -219,6 +234,7 @@ const styles = StyleSheet.create({
     color: COLORS.danger,
     fontSize: SIZES.sm,
     fontWeight: '600',
+    flex: 1,
   },
   loginBtn: {
     marginTop: 8,
@@ -230,6 +246,10 @@ const styles = StyleSheet.create({
     borderRadius: SIZES.radius,
     borderWidth: 1,
     borderColor: 'rgba(56, 189, 248, 0.3)',
+    alignItems: 'center',
+  },
+  demoRow: {
+    flexDirection: 'row',
     alignItems: 'center',
   },
   demoFillText: {
