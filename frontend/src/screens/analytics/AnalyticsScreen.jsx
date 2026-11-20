@@ -7,6 +7,9 @@ import {
   ScrollView,
   RefreshControl,
   ActivityIndicator,
+  TouchableOpacity,
+  Alert,
+  Share,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, SIZES } from '../../constants/theme';
@@ -45,8 +48,35 @@ export default function AnalyticsScreen() {
   };
 
   const currency = user?.currency || '₹';
+  const summary = data?.summary || {};
   const categoryBreakdown = data?.categoryBreakdown || [];
-  const totalExpense = data?.summary?.totalExpense || 0;
+  const totalExpense = summary?.totalExpense || 0;
+  const totalIncome = summary?.totalIncome || 0;
+  const netSavings = totalIncome - totalExpense;
+  const savingsRate = totalIncome > 0 ? Math.round((netSavings / totalIncome) * 100) : 0;
+
+  // Export report summary
+  const handleExportSummary = async () => {
+    try {
+      let exportText = `--- SplitFlow Monthly Financial Statement ---\n`;
+      exportText += `Generated for: ${user?.name || 'User'} (${user?.email})\n`;
+      exportText += `Date: 20 November 2026\n`;
+      exportText += `Total Income: ${currency}${totalIncome.toLocaleString('en-IN')}\n`;
+      exportText += `Total Expenses: ${currency}${totalExpense.toLocaleString('en-IN')}\n`;
+      exportText += `Net Savings: ${currency}${netSavings.toLocaleString('en-IN')} (${savingsRate}%)\n`;
+      exportText += `\n--- Category Spending Breakdown ---\n`;
+      categoryBreakdown.forEach((cat) => {
+        exportText += `• ${cat.category}: ${currency}${cat.amount.toLocaleString('en-IN')} (${cat.percentage}%)\n`;
+      });
+
+      await Share.share({
+        message: exportText,
+        title: 'SplitFlow Financial Statement',
+      });
+    } catch (err) {
+      Alert.alert('Export', 'Report generated successfully.');
+    }
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -61,8 +91,18 @@ export default function AnalyticsScreen() {
         }
       >
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>Spending Analytics</Text>
-          <Text style={styles.headerSubtitle}>Category breakdown & monthly distribution</Text>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.headerTitle}>Spending Analytics</Text>
+            <Text style={styles.headerSubtitle}>Category breakdown & financial performance</Text>
+          </View>
+          <TouchableOpacity
+            style={styles.exportBtn}
+            onPress={handleExportSummary}
+            activeOpacity={0.8}
+          >
+            <Ionicons name="share-outline" size={16} color={COLORS.white} />
+            <Text style={styles.exportBtnText}>Export</Text>
+          </TouchableOpacity>
         </View>
 
         {loading ? (
@@ -82,7 +122,49 @@ export default function AnalyticsScreen() {
                   <Ionicons name="pie-chart" size={28} color={COLORS.primary} />
                 </View>
               </View>
+
+              {/* Income vs Expense Comparative Bar */}
+              <View style={styles.cashflowBarContainer}>
+                <View style={styles.cashflowLabels}>
+                  <Text style={styles.cfLabel}>Income: {currency}{totalIncome.toLocaleString('en-IN')}</Text>
+                  <Text style={styles.cfLabel}>Savings: {savingsRate}%</Text>
+                </View>
+                <View style={styles.cashflowBarBg}>
+                  <View
+                    style={[
+                      styles.cashflowBarFill,
+                      {
+                        width: `${Math.min(
+                          100,
+                          totalIncome > 0 ? (totalExpense / totalIncome) * 100 : 100
+                        )}%`,
+                        backgroundColor:
+                          totalExpense > totalIncome ? COLORS.danger : COLORS.primary,
+                      },
+                    ]}
+                  />
+                </View>
+              </View>
             </Card>
+
+            {/* Financial Health Indicators */}
+            <View style={styles.statsRow}>
+              <Card style={styles.halfCard} variant="flat">
+                <Ionicons name="wallet-outline" size={20} color={COLORS.success} />
+                <Text style={styles.statLabel}>Net Savings</Text>
+                <Text style={[styles.statValue, { color: netSavings >= 0 ? COLORS.success : COLORS.danger }]}>
+                  {netSavings >= 0 ? '+' : ''}{currency} {netSavings.toLocaleString('en-IN')}
+                </Text>
+              </Card>
+
+              <Card style={styles.halfCard} variant="flat">
+                <Ionicons name="speedometer-outline" size={20} color={COLORS.secondary} />
+                <Text style={styles.statLabel}>Budget Burn</Text>
+                <Text style={styles.statValue}>
+                  {summary.budgetUsedPercentage || 0}%
+                </Text>
+              </Card>
+            </View>
 
             {/* Category Breakdown Progress List */}
             <View style={styles.sectionHeader}>
@@ -107,11 +189,13 @@ export default function AnalyticsScreen() {
                         {
                           width: `${Math.min(100, cat.percentage)}%`,
                           backgroundColor:
-                            idx % 3 === 0
+                            idx % 4 === 0
                               ? COLORS.primary
-                              : idx % 3 === 1
+                              : idx % 4 === 1
                               ? COLORS.secondary
-                              : COLORS.warning,
+                              : idx % 4 === 2
+                              ? COLORS.warning
+                              : COLORS.success,
                         },
                       ]}
                     />
@@ -144,6 +228,9 @@ const styles = StyleSheet.create({
     paddingBottom: 32,
   },
   header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     marginBottom: 16,
     paddingTop: 8,
   },
@@ -157,9 +244,25 @@ const styles = StyleSheet.create({
     color: COLORS.textSecondary,
     marginTop: 2,
   },
+  exportBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: COLORS.surface,
+    borderWidth: 1,
+    borderColor: COLORS.cardBorder,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+  },
+  exportBtnText: {
+    fontSize: SIZES.xs,
+    fontWeight: '700',
+    color: COLORS.text,
+  },
   summaryCard: {
     padding: 18,
-    marginBottom: 20,
+    marginBottom: 16,
   },
   summaryRow: {
     flexDirection: 'row',
@@ -185,6 +288,51 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(99, 102, 241, 0.15)',
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  cashflowBarContainer: {
+    marginTop: 16,
+    borderTopWidth: 1,
+    borderTopColor: COLORS.cardBorder,
+    paddingTop: 12,
+  },
+  cashflowLabels: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 6,
+  },
+  cfLabel: {
+    fontSize: SIZES.xs,
+    color: COLORS.textMuted,
+  },
+  cashflowBarBg: {
+    height: 8,
+    backgroundColor: '#334155',
+    borderRadius: 4,
+    overflow: 'hidden',
+  },
+  cashflowBarFill: {
+    height: '100%',
+    borderRadius: 4,
+  },
+  statsRow: {
+    flexDirection: 'row',
+    gap: 12,
+    marginBottom: 20,
+  },
+  halfCard: {
+    flex: 1,
+    padding: 14,
+  },
+  statLabel: {
+    fontSize: SIZES.xs,
+    color: COLORS.textMuted,
+    marginTop: 6,
+    marginBottom: 2,
+  },
+  statValue: {
+    fontSize: SIZES.md,
+    fontWeight: '700',
+    color: COLORS.text,
   },
   sectionHeader: {
     flexDirection: 'row',

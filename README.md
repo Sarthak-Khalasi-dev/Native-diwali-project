@@ -37,20 +37,27 @@
     - Automatic JWT `Bearer` token header injection.
     - Modular endpoints (`api.auth`, `api.expenses`, `api.groups`, `api.analytics`).
 
-- [ ] **Day 3: React Navigation & Deep Route Integration**
+- [x] **Day 3: React Navigation & Deep Route Integration (17 Nov)**
   - Bottom Tab Navigator (`Dashboard`, `Expenses`, `Groups`, `Analytics`, `Profile`).
-  - Stack Navigation for Modal forms (Add Expense, Create Group, Settlement flow).
+  - Native stack transitions and sub-routes for group breakdown & management.
 
-- [ ] **Day 4: Personal Expense Tracking & Budget Controls**
-  - Expense CRUD, category filtering, date ranges, and budget threshold alerts.
+- [x] **Day 4: Personal Expense Tracking & Budget Controls (18 Nov)**
+  - Full Expense CRUD modal (`ExpenseModal.jsx`) supporting amount, category, payment method, and notes.
+  - Interactive category filter pills with instant updates.
+  - Edit and delete transaction actions wired directly to `/api/expenses`.
 
-- [ ] **Day 5: Group Bill Splitting & Balance Settlement Algorithm**
-  - Equal and custom split calculation, group member management, debt minimization settlement engine.
+- [x] **Day 5: Group Bill Splitting & Balance Settlement Algorithm (19 Nov)**
+  - Group creation with multi-member email invitation (`CreateGroupModal.jsx`).
+  - Equal and split calculation modal (`AddGroupExpenseModal.jsx`).
+  - Net balance breakdown with member-by-member debt resolution.
+  - Settlement recording modal (`SettleModal.jsx`) connected to `/api/groups/:id/settle`.
 
-- [ ] **Day 6: Advanced Financial Analytics & Visual Charts**
-  - Monthly spending trends, category breakdown charts, CSV/PDF export preview.
+- [x] **Day 6: Advanced Financial Analytics & Visual Charts (20 Nov - Today)**
+  - Real-time monthly spending trends, category breakdown percentage bars.
+  - Financial health cards (Net savings, budget burn rate).
+  - One-tap financial statement export & share summary.
 
-- [ ] **Day 7: Final Polish, Offline Sync & Demo Packaging**
+- [ ] **Day 7: Final Polish, Offline Sync & Demo Packaging (21-22 Nov)**
   - Polished animations, comprehensive test pass, documentation, and submission APK/Expo build.
 
 ---

@@ -14,11 +14,13 @@ import { COLORS, SIZES } from '../../constants/theme';
 import api from '../../services/api';
 import Card from '../../components/common/Card';
 import Badge from '../../components/common/Badge';
+import CreateGroupModal from '../../components/group/CreateGroupModal';
 
-export default function GroupListScreen() {
+export default function GroupListScreen({ navigation }) {
   const [groups, setGroups] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [createModalVisible, setCreateModalVisible] = useState(false);
 
   const fetchGroups = async () => {
     try {
@@ -50,7 +52,11 @@ export default function GroupListScreen() {
           <Text style={styles.headerTitle}>Shared Groups</Text>
           <Text style={styles.headerSubtitle}>Split bills and track who owes what</Text>
         </View>
-        <TouchableOpacity style={styles.createBtn} activeOpacity={0.8}>
+        <TouchableOpacity
+          style={styles.createBtn}
+          activeOpacity={0.8}
+          onPress={() => setCreateModalVisible(true)}
+        >
           <Ionicons name="people" size={18} color={COLORS.white} />
           <Text style={styles.createBtnText}>New</Text>
         </TouchableOpacity>
@@ -82,35 +88,52 @@ export default function GroupListScreen() {
             </Card>
           }
           renderItem={({ item }) => (
-            <Card style={styles.groupCard} variant="elevated">
-              <View style={styles.groupHeader}>
-                <View style={styles.iconCircle}>
-                  <Ionicons name="home-outline" size={22} color={COLORS.secondary} />
+            <TouchableOpacity
+              activeOpacity={0.7}
+              onPress={() =>
+                navigation.navigate('GroupDetail', {
+                  groupId: item._id,
+                  groupName: item.name,
+                })
+              }
+            >
+              <Card style={styles.groupCard} variant="elevated">
+                <View style={styles.groupHeader}>
+                  <View style={styles.iconCircle}>
+                    <Ionicons name="home-outline" size={22} color={COLORS.secondary} />
+                  </View>
+                  <View style={styles.groupInfo}>
+                    <Text style={styles.groupName}>{item.name}</Text>
+                    <Text style={styles.groupDesc} numberOfLines={1}>
+                      {item.description || 'Shared household & outing expenses'}
+                    </Text>
+                  </View>
+                  <Badge text={item.category || 'General'} variant="info" size="sm" />
                 </View>
-                <View style={styles.groupInfo}>
-                  <Text style={styles.groupName}>{item.name}</Text>
-                  <Text style={styles.groupDesc} numberOfLines={1}>
-                    {item.description || 'Shared household & outing expenses'}
-                  </Text>
-                </View>
-                <Badge text={item.category || 'General'} variant="info" size="sm" />
-              </View>
 
-              <View style={styles.groupFooter}>
-                <View style={styles.membersRow}>
-                  <Ionicons name="person-circle-outline" size={16} color={COLORS.textSecondary} />
-                  <Text style={styles.membersCount}>
-                    {item.members?.length || 1} Member{item.members?.length > 1 ? 's' : ''}
-                  </Text>
+                <View style={styles.groupFooter}>
+                  <View style={styles.membersRow}>
+                    <Ionicons name="person-circle-outline" size={16} color={COLORS.textSecondary} />
+                    <Text style={styles.membersCount}>
+                      {item.members?.length || 1} Member{item.members?.length > 1 ? 's' : ''}
+                    </Text>
+                  </View>
+                  <View style={styles.actionRow}>
+                    <Text style={styles.viewText}>View Split Details →</Text>
+                  </View>
                 </View>
-                <View style={styles.actionRow}>
-                  <Text style={styles.viewText}>View Split Details →</Text>
-                </View>
-              </View>
-            </Card>
+              </Card>
+            </TouchableOpacity>
           )}
         />
       )}
+
+      {/* Modal to create a group */}
+      <CreateGroupModal
+        visible={createModalVisible}
+        onClose={() => setCreateModalVisible(false)}
+        onCreated={fetchGroups}
+      />
     </SafeAreaView>
   );
 }

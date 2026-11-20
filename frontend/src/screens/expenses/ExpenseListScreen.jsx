@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   RefreshControl,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { COLORS, SIZES } from '../../constants/theme';
@@ -15,8 +16,20 @@ import { useAuth } from '../../context/AuthContext';
 import api from '../../services/api';
 import Card from '../../components/common/Card';
 import Badge from '../../components/common/Badge';
+import ExpenseModal from '../../components/expense/ExpenseModal';
 
-const CATEGORIES = ['All', 'Food & Dining', 'Groceries', 'Housing & Rent', 'Bills & Utilities', 'Salary'];
+const CATEGORIES = [
+  'All',
+  'Food & Dining',
+  'Groceries',
+  'Transportation',
+  'Housing & Rent',
+  'Bills & Utilities',
+  'Entertainment',
+  'Shopping',
+  'Salary',
+  'Other',
+];
 
 export default function ExpenseListScreen() {
   const { user } = useAuth();
@@ -24,6 +37,10 @@ export default function ExpenseListScreen() {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+
+  // Modal State
+  const [modalVisible, setModalVisible] = useState(false);
+  const [editingExpense, setEditingExpense] = useState(null);
 
   const fetchExpenses = async () => {
     try {
@@ -53,6 +70,38 @@ export default function ExpenseListScreen() {
     fetchExpenses();
   };
 
+  const handleOpenAdd = () => {
+    setEditingExpense(null);
+    setModalVisible(true);
+  };
+
+  const handleOpenEdit = (item) => {
+    setEditingExpense(item);
+    setModalVisible(true);
+  };
+
+  const handleDelete = (id, title) => {
+    Alert.alert(
+      'Delete Transaction',
+      `Are you sure you want to delete "${title}"?`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await api.expenses.delete(id);
+              fetchExpenses();
+            } catch (err) {
+              Alert.alert('Error', err.message || 'Failed to delete transaction');
+            }
+          },
+        },
+      ]
+    );
+  };
+
   const currency = user?.currency || '₹';
 
   return (
@@ -62,7 +111,11 @@ export default function ExpenseListScreen() {
           <Text style={styles.headerTitle}>Transactions</Text>
           <Text style={styles.headerSubtitle}>Personal expenses & income history</Text>
         </View>
-        <TouchableOpacity style={styles.addBtn} activeOpacity={0.8}>
+        <TouchableOpacity
+          style={styles.addBtn}
+          activeOpacity={0.8}
+          onPress={handleOpenAdd}
+        >
           <Ionicons name="add" size={20} color={COLORS.white} />
           <Text style={styles.addBtnText}>Add</Text>
         </TouchableOpacity>
@@ -126,48 +179,70 @@ export default function ExpenseListScreen() {
             </Card>
           }
           renderItem={({ item }) => (
-            <Card style={styles.itemCard} variant="flat">
-              <View style={styles.itemRow}>
-                <View
-                  style={[
-                    styles.iconBox,
-                    {
-                      backgroundColor:
-                        item.type === 'income'
-                          ? 'rgba(16, 185, 129, 0.15)'
-                          : 'rgba(244, 63, 94, 0.15)',
-                    },
-                  ]}
-                >
-                  <Ionicons
-                    name={item.type === 'income' ? 'arrow-down-circle' : 'arrow-up-circle'}
-                    size={22}
-                    color={item.type === 'income' ? COLORS.income : COLORS.expense}
-                  />
-                </View>
-                <View style={styles.itemDetails}>
-                  <Text style={styles.itemTitle}>{item.title}</Text>
-                  <View style={styles.itemSubRow}>
-                    <Badge text={item.category} variant="primary" size="sm" />
-                    <Text style={styles.itemDate}>
-                      {new Date(item.date).toLocaleDateString()} • {item.paymentMethod}
+            <TouchableOpacity
+              activeOpacity={0.7}
+              onPress={() => handleOpenEdit(item)}
+              onLongPress={() => handleDelete(item._id, item.title)}
+            >
+              <Card style={styles.itemCard} variant="flat">
+                <View style={styles.itemRow}>
+                  <View
+                    style={[
+                      styles.iconBox,
+                      {
+                        backgroundColor:
+                          item.type === 'income'
+                            ? 'rgba(16, 185, 129, 0.15)'
+                            : 'rgba(244, 63, 94, 0.15)',
+                      },
+                    ]}
+                  >
+                    <Ionicons
+                      name={item.type === 'income' ? 'arrow-down-circle' : 'arrow-up-circle'}
+                      size={22}
+                      color={item.type === 'income' ? COLORS.income : COLORS.expense}
+                    />
+                  </View>
+                  <View style={styles.itemDetails}>
+                    <Text style={styles.itemTitle}>{item.title}</Text>
+                    <View style={styles.itemSubRow}>
+                      <Badge text={item.category} variant="primary" size="sm" />
+                      <Text style={styles.itemDate}>
+                        {new Date(item.date).toLocaleDateString()} • {item.paymentMethod}
+                      </Text>
+                    </View>
+                  </View>
+                  <View style={styles.rightSection}>
+                    <Text
+                      style={[
+                        styles.itemAmount,
+                        { color: item.type === 'income' ? COLORS.income : COLORS.expense },
+                      ]}
+                    >
+                      {item.type === 'income' ? '+' : '-'}
+                      {currency} {item.amount.toLocaleString('en-IN')}
                     </Text>
+                    <TouchableOpacity
+                      onPress={() => handleDelete(item._id, item.title)}
+                      style={styles.deleteIconBtn}
+                    >
+                      <Ionicons name="trash-outline" size={16} color={COLORS.textMuted} />
+                    </TouchableOpacity>
                   </View>
                 </View>
-                <Text
-                  style={[
-                    styles.itemAmount,
-                    { color: item.type === 'income' ? COLORS.income : COLORS.expense },
-                  ]}
-                >
-                  {item.type === 'income' ? '+' : '-'}
-                  {currency} {item.amount.toLocaleString('en-IN')}
-                </Text>
-              </View>
-            </Card>
+              </Card>
+            </TouchableOpacity>
           )}
         />
       )}
+
+      {/* Add / Edit Expense Modal */}
+      <ExpenseModal
+        visible={modalVisible}
+        initialExpense={editingExpense}
+        onClose={() => setModalVisible(false)}
+        onSaved={fetchExpenses}
+      />
     </SafeAreaView>
   );
 }
@@ -279,9 +354,16 @@ const styles = StyleSheet.create({
     fontSize: SIZES.xs,
     color: COLORS.textMuted,
   },
+  rightSection: {
+    alignItems: 'flex-end',
+    gap: 4,
+  },
   itemAmount: {
     fontSize: SIZES.base,
     fontWeight: '700',
+  },
+  deleteIconBtn: {
+    padding: 4,
   },
   emptyCard: {
     padding: 32,

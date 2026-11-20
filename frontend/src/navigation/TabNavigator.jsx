@@ -6,7 +6,7 @@ import { COLORS, SIZES } from '../constants/theme';
 
 import DashboardScreen from '../screens/dashboard/DashboardScreen';
 import ExpenseListScreen from '../screens/expenses/ExpenseListScreen';
-import GroupListScreen from '../screens/groups/GroupListScreen';
+import GroupNavigator from './GroupNavigator';
 import AnalyticsScreen from '../screens/analytics/AnalyticsScreen';
 import ProfileScreen from '../screens/profile/ProfileScreen';
 
@@ -51,7 +51,7 @@ export default function TabNavigator() {
     >
       <Tab.Screen name="Dashboard" component={DashboardScreen} />
       <Tab.Screen name="Expenses" component={ExpenseListScreen} />
-      <Tab.Screen name="Groups" component={GroupListScreen} />
+      <Tab.Screen name="Groups" component={GroupNavigator} />
       <Tab.Screen name="Analytics" component={AnalyticsScreen} />
       <Tab.Screen name="Profile" component={ProfileScreen} />
     </Tab.Navigator>
