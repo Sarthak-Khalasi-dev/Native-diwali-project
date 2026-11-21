@@ -26,7 +26,7 @@ const groupExpenseSchema = new mongoose.Schema(
     },
     category: {
       type: String,
-      enum: ['Food & Drinks', 'Rent & Bills', 'Groceries', 'Travel', 'Entertainment', 'Shopping', 'General'],
+      enum: ['Food & Drinks', 'Dining Out', 'Rent & Bills', 'Rent & Utilities', 'Groceries', 'Travel', 'Travel / Fuel', 'Entertainment', 'Shopping', 'General'],
       default: 'General'
     },
     date: {

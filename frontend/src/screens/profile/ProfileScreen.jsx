@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   StyleSheet,
   View,
@@ -13,9 +13,11 @@ import { useAuth } from '../../context/AuthContext';
 import Card from '../../components/common/Card';
 import Badge from '../../components/common/Badge';
 import Button from '../../components/common/Button';
+import EditProfileModal from '../../components/profile/EditProfileModal';
 
 export default function ProfileScreen() {
   const { user, logout } = useAuth();
+  const [modalVisible, setModalVisible] = useState(false);
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -37,7 +39,14 @@ export default function ProfileScreen() {
 
         {/* Budget Setting Card */}
         <Card style={styles.sectionCard} variant="flat">
-          <Text style={styles.sectionTitle}>Budget Preferences</Text>
+          <View style={styles.prefHeader}>
+            <Text style={styles.sectionTitle}>Budget Preferences</Text>
+            <TouchableOpacity onPress={() => setModalVisible(true)} style={styles.editBtn}>
+              <Ionicons name="pencil" size={14} color={COLORS.primary} />
+              <Text style={styles.editBtnText}>Edit</Text>
+            </TouchableOpacity>
+          </View>
+
           <View style={styles.prefRow}>
             <View style={styles.prefLeft}>
               <Ionicons name="cash-outline" size={20} color={COLORS.primary} style={{ marginRight: 10 }} />
@@ -68,6 +77,12 @@ export default function ProfileScreen() {
             <Text style={styles.infoLabel}>Author</Text>
             <Text style={styles.infoValue}>Sarthak Khalasi</Text>
           </View>
+          <View style={styles.infoRow}>
+            <Text style={styles.infoLabel}>Milestone Status</Text>
+            <Text style={[styles.infoValue, { color: COLORS.success, fontWeight: '700' }]}>
+              Day 7 / 21 Nov Complete (Production Ready)
+            </Text>
+          </View>
         </Card>
 
         {/* Logout Button */}
@@ -79,6 +94,12 @@ export default function ProfileScreen() {
           style={styles.logoutBtn}
         />
       </ScrollView>
+
+      {/* Edit Profile Modal */}
+      <EditProfileModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+      />
     </SafeAreaView>
   );
 }
@@ -132,13 +153,32 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 14,
   },
+  prefHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
   sectionTitle: {
     fontSize: SIZES.sm,
     fontWeight: '700',
     color: COLORS.textSecondary,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
-    marginBottom: 12,
+  },
+  editBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+    backgroundColor: 'rgba(99, 102, 241, 0.15)',
+  },
+  editBtnText: {
+    fontSize: SIZES.xs,
+    color: COLORS.primary,
+    fontWeight: '700',
   },
   prefRow: {
     flexDirection: 'row',

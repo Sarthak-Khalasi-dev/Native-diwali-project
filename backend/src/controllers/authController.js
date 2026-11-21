@@ -92,7 +92,8 @@ exports.getMe = async (req, res, next) => {
     const user = await User.findById(req.user.id);
     res.status(200).json({
       success: true,
-      user
+      user,
+      data: user
     });
   } catch (error) {
     next(error);
@@ -113,7 +114,8 @@ exports.updateProfile = async (req, res, next) => {
 
     res.status(200).json({
       success: true,
-      user
+      user,
+      data: user
     });
   } catch (error) {
     next(error);

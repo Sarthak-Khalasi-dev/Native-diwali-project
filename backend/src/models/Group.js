@@ -15,7 +15,7 @@ const groupSchema = new mongoose.Schema(
     },
     category: {
       type: String,
-      enum: ['Trip', 'Flatmates / Home', 'Project / College', 'Couple', 'Office', 'Other'],
+      enum: ['Trip', 'Trip & Vacation', 'Flatmates / Home', 'Couple', 'Couple / Friends', 'Event / Party', 'Work', 'Office', 'Project / College', 'Other'],
       default: 'Flatmates / Home'
     },
     createdBy: {
