@@ -1,68 +1,61 @@
 # SplitFlow - Smart Expense & Group Bill Splitter 💸
 
-> **Diwali Project Submission**  
-> **Author:** Sarthak Khalasi  
-> **Target Final Submission:** 22nd November 2026  
-> **Tech Stack:** React Native (Expo) • Node.js • Express • MongoDB Mongoose
+A modern, full-stack financial management mobile application built with **React Native (Expo)**, **Node.js/Express**, and **MongoDB**. SplitFlow makes tracking personal expenses, managing monthly budgets, and splitting shared group bills effortless and transparent.
 
 ---
 
-## 📅 Development Roadmap & Milestones
+## 📱 App Links & Repository
 
-- [x] **Day 1: Project Architecture & Backend Scaffolding**
-  - Configured project directory structure (`backend` and `frontend`).
-  - Set up MongoDB Mongoose schemas (`User`, `Expense`, `Group`, `GroupExpense`, `Settlement`).
-  - Implemented initial REST API controllers & routes (Auth, Expenses, Groups, Analytics).
-  - Created database seeder script (`backend/src/seed.js`) with demo accounts and sample expenses.
-  - Initialized React Native Expo project structure and dark modern design token theme.
+- **GitHub Repository:** [https://github.com/Sarthak-Khalasi-dev/Native-diwali-project.git](https://github.com/Sarthak-Khalasi-dev/Native-diwali-project.git)
+- **Expo App Link / Slug:** `exp://u.expo.dev/projects/splitflow` (Slug: `splitflow`)
+- **Package Identifier:** `com.sarthak.splitflow`
 
-- [x] **Day 2: Authentication System & UI Foundation**
-  - **Auth State Management (`AuthContext.js`)**:
-    - Centralized auth state (`user`, `token`, `isAuthenticated`, `isLoading`, `authError`).
-    - Async storage persistence (`splitflow_token` & `splitflow_user`) for persistent session across app reboots.
-    - Token verification against backend `/api/auth/me`.
-    - Profile update & seamless session logout handlers.
-  - **Design System & Reusable Components (`frontend/src/components/common/`)**:
-    - `Button.js`: Variants (`primary`, `secondary`, `outline`, `danger`, `ghost`), loading states, sizing (`sm`, `md`, `lg`).
-    - `Input.js`: Styled text input with floating label, password eye toggle (`Show/Hide`), validation indicators, helper messages.
-    - `Card.js`: Themed containers (`default`, `elevated`, `flat`) matching Slate/Navy design tokens.
-    - `Badge.js`: Colorful status & milestone pills with subtle background glows.
-    - `Header.js`: Screen top bars with back navigation and title/action layouts.
-    - `StatCard.js`: Visual financial metric cards with formatted currency and trend indicators.
-  - **Screen Implementations**:
-    - `LoginScreen.js`: User authentication form, input validation, 1-tap **Quick Fill Demo Credentials** (`sarthak@splitflow.com` / `password123`), error banner.
-    - `RegisterScreen.js`: User registration, email format & password length validation, interactive currency selector (`₹`, `$`, `€`, `£`), monthly budget configuration.
-    - `DashboardScreen.js`: Live budget utilization bar, monthly income/expense summary, cashflow balance, recent transactions list with refresh control, backend connectivity status indicator.
-  - **API Client Layer (`frontend/src/services/api.js`)**:
-    - Automatic JWT `Bearer` token header injection.
-    - Modular endpoints (`api.auth`, `api.expenses`, `api.groups`, `api.analytics`).
+---
 
-- [x] **Day 3: React Navigation & Deep Route Integration (17 Nov)**
-  - Bottom Tab Navigator (`Dashboard`, `Expenses`, `Groups`, `Analytics`, `Profile`).
-  - Native stack transitions and sub-routes for group breakdown & management.
+## ✨ Key Features
 
-- [x] **Day 4: Personal Expense Tracking & Budget Controls (18 Nov)**
-  - Full Expense CRUD modal (`ExpenseModal.jsx`) supporting amount, category, payment method, and notes.
-  - Interactive category filter pills with instant updates.
-  - Edit and delete transaction actions wired directly to `/api/expenses`.
+### 1. 📊 Personal Expense & Income Tracking
+- **Transaction Logging**: Record expenses and income with amount, title, date, notes, and payment methods (UPI/QR, Cash, Card, Net Banking).
+- **Category Organization**: Categorize transactions (Food & Dining, Groceries, Housing & Rent, Bills & Utilities, Entertainment, Salary, etc.).
+- **Interactive Filtering**: Filter transactions seamlessly across categories with one-tap pill filters.
+- **Full CRUD Support**: Add, edit, or delete transactions on the fly with instant balance updates.
 
-- [x] **Day 5: Group Bill Splitting & Balance Settlement Algorithm (19 Nov)**
-  - Group creation with multi-member email invitation (`CreateGroupModal.jsx`).
-  - Equal and split calculation modal (`AddGroupExpenseModal.jsx`).
-  - Net balance breakdown with member-by-member debt resolution.
-  - Settlement recording modal (`SettleModal.jsx`) connected to `/api/groups/:id/settle`.
+### 2. 👥 Group Bill Splitting & Debt Settlement Engine
+- **Shared Groups**: Create groups for flatmates, trips, couples, office teams, or events.
+- **Multi-Member Email Invites**: Add friends and group members using their email addresses.
+- **Automated Equal & Custom Split**: Split bills automatically with instant per-person calculation.
+- **Net Balance Breakdown**: Real-time balance ledger indicating exactly who owes whom (`+₹X gets back` vs `-₹X owes`).
+- **One-Tap "Settle Up"**: Record settlements directly via UPI, Cash, or Net Banking to clear balances.
 
-- [x] **Day 6: Advanced Financial Analytics & Visual Charts (20 Nov - Today)**
-  - Real-time monthly spending trends, category breakdown percentage bars.
-  - Financial health cards (Net savings, budget burn rate).
-  - One-tap financial statement export & share summary.
+### 3. 📈 Financial Analytics & Visual Insights
+- **Monthly Spending Trends**: Live visual comparison between total income and expenses.
+- **Category Breakdown Bars**: Color-coded progress indicators illustrating spending distribution percentages.
+- **Budget Burn Rate & Warnings**: Real-time monitoring of monthly budget utilization with warning alerts.
+- **Financial Statement Export**: Generate and share summary reports with a single tap.
 
-- [x] **Day 7: Final Polish, Testing & Production Validation (21 Nov)**
-  - Fixed Expo SDK 52 bundling dependencies (`expo-font`, `expo-asset`).
-  - Added interactive Profile & Budget Preference management modal (`EditProfileModal.jsx`).
-  - Synchronized Group schema category enums with frontend selectors (`Dining Out`, `Travel / Fuel`, `Rent & Utilities`).
-  - Verified backend endpoints with automated test suite covering Auth, Expenses CRUD, Group splits, and Debt settlements.
-  - Metro production bundling verification passed across Android and iOS platforms.
+### 4. 🔒 Authentication & Profile Preferences
+- **Secure Authentication**: JWT token-based auth with encrypted password hashing (`bcryptjs`).
+- **Persistent Sessions**: Seamless session persistence across app launches via local storage.
+- **Customizable Preferences**: Update monthly target budget and choose preferred currency (`₹ INR`, `$ USD`, `€ EUR`, `£ GBP`).
+- **1-Tap Quick Fill Demo Account**: Test all features instantly without signing up from scratch.
+
+---
+
+## 🏗️ Architecture & Tech Stack
+
+### Frontend (Mobile App)
+- **Framework:** React Native with **Expo SDK 52**
+- **Navigation:** React Navigation 7 (Bottom Tabs + Native Stack)
+- **Design System:** Custom Dark Theme design tokens (Navy / Indigo / Slate)
+- **Icons & Assets:** `@expo/vector-icons` (Ionicons), `expo-font`, `expo-asset`
+- **State & Storage:** Context API (`AuthContext`), `@react-native-async-storage/async-storage`
+
+### Backend (REST API)
+- **Runtime:** Node.js (v18+)
+- **Framework:** Express.js 5
+- **Database:** MongoDB with Mongoose ODM
+- **Authentication:** JSON Web Tokens (`jsonwebtoken`) & `bcryptjs`
+- **CORS & Environment:** `cors`, `dotenv`
 
 ---
 
@@ -70,30 +63,49 @@
 
 ### 1. Prerequisites
 - **Node.js** (v18+ recommended)
-- **MongoDB** running locally on default port `27017` (or MongoDB Atlas URI)
+- **MongoDB** running locally on default port `27017` (or MongoDB Atlas URI in `.env`)
 - **Expo Go** mobile app (iOS or Android) or an emulator
 
-### 2. Backend Setup
+---
+
+### 2. Backend Setup & Seeding
+
 ```bash
 cd backend
 npm install
-npm run seed     # Seeds demo users, sample expenses, and a roommate group
+npm run seed     # Seeds demo users, expenses, and roommate group
 npm run dev      # Starts server on http://localhost:5000
 ```
 
-### 3. Frontend Setup
+---
+
+### 3. Frontend Mobile Setup
+
 ```bash
 cd frontend
 npm install
 npx expo start
 ```
-- Press `w` to open in your web browser.
-- Scan the QR code using the **Expo Go** app on your physical mobile device.
-  *(Note: When running on a physical phone, ensure your computer and phone are on the same Wi-Fi and set `BASE_URL` in `frontend/src/services/api.js` to your computer's local IP address, e.g., `http://192.168.1.X:5000/api`).*
+
+- **Run on Web:** Press `w` in your terminal to open in browser.
+- **Run on Android Emulator:** Press `a`.
+- **Run on iOS Simulator:** Press `i`.
+- **Run on Physical Phone:** Scan the QR code using the **Expo Go** app on your phone.
+  > *Note: When running on a physical phone, ensure your phone and computer are on the same Wi-Fi network and update `BASE_URL` in `frontend/src/services/api.jsx` to your computer's local IP (e.g. `http://192.168.1.X:5000/api`).*
 
 ---
 
 ## 🔑 Demo Credentials
-You can log in instantly with the seeded account or tap **"Quick Fill Demo Credentials"** on the Login screen:
+
+To test the application immediately:
 - **Email:** `sarthak@splitflow.com`
 - **Password:** `password123`
+*(Or simply tap **"Quick Fill Demo Credentials"** on the Login screen).*
+
+---
+
+## 👨‍💻 Author & Submission
+
+- **Author:** Sarthak Khalasi
+- **Project:** Diwali Project Submission
+- **Target Date:** 21st - 22nd November 2026
